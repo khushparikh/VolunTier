@@ -133,14 +133,18 @@ h3{
 }
 
 body {
-	background: #f6f5f7;
-	display: flex;
+	background-image:no-repeat url(https://images.unsplash.com/photo-1454942901704-3c44c11b2ad1?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGVvcGxlJTIwbmF0dXJlfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80);
+	
+
+
+    
+    display: flex;
 	justify-content: center;
 	align-items: center;
 	flex-direction: column;
 	font-family: 'Montserrat', sans-serif;
 	height: 100vh;
-	margin: -20px 0 50px;
+	/*margin: -20px 0 50px;*/
 }
 
 h1 {
@@ -173,8 +177,8 @@ a {
 
 button {
 	border-radius: 20px;
-	border: 1px solid #FF4B2B;
-	background-color: #FF4B2B;
+	border: 1px solid #fec89a;
+	background-color:#fec89a;
 	color: #FFFFFF;
 	font-size: 12px;
 	font-weight: bold;
@@ -288,8 +292,8 @@ input {
 
 .overlay {
 	background:#bfd7ff;
-	background: -webkit-linear-gradient(to right, #bfd7ff, #bfd7ff);
-	background: linear-gradient(to right,#bfd7ff,#bfd7ff);
+	background: -webkit-linear-gradient(to right,#fec89a,#fec89a);
+	background: linear-gradient(to right,#fec89a,#fec89a);
 
 	background-repeat: no-repeat;
 	background-size: cover;
@@ -354,3 +358,9 @@ input {
 	width: 40px;
 }
 
+nav{
+    top: auto;
+}
+.btn-check{ 
+    color: coral;
+}
