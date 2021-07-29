@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+</head>
+<body>
+    <h1>Add Your Organization</h1>
+    <form action = "/profiles" method = 'POST'>
+        <label for= "name">Name:</label>
+        <input type = "text" name = "name" id = "name" placeholder = "Organization name">
+        <label for = "townLocation">Town Location:</label>
+        <input type = "text" name = "townLocation" id = "townlocation" placeholder = "Town Location">
+        <label for = "zipCode">Zip Code:</label>
+        <input type = "number" name = "zipCode" id = "zipCode" placeholder = "Zip Code">
+        <label for = "taxID">Tax ID:</label>
+        <input type = "number" name = "taxID" id = "taxID" placeholder = "Tax ID">
+        <label for = "phoneNum">Phone number</label>
+        <input type = "number" name = "phoneNum" id = "phoneNum" placeholder = "Phone number">
+        <h2></h2>
+        <label for = "interestTag1">Organization is about:</label>
+        <select name = "interestTag1" id="interestTag1">
+            <% for(let category of categories2) { %>
+                <option value = "<%= category %>"><%= category %></option>
+            <% } %>
+        </select>
+        <input type="submit">
+    </form>
+    <h2></h2>
+    <a href = "/profiles">Cancel</a>
+</body>
+</html> 
