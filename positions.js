@@ -19,7 +19,6 @@ const positionSchema = new mongoose.Schema({
     interestTag2: String,
 })
 
-
 const Position = mongoose.model('Position', positionSchema);
 
-module.exports = Position; 
+module.exports = Position;

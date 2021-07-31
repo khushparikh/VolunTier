@@ -7,12 +7,16 @@ const profileSchema = new mongoose.Schema({
     },
     townLocation: String,
     zipCode: Number,
-    taxID: Number,
+    location: {
+        type: String,
+        enum: ['Virtual', 'In-Person']
+    },
     interestTag1: String,
-    phoneNum: Number,
+    interestTag2: String,
+    interestTag3: String
 })
 
 
 const Profile = mongoose.model('Profile', profileSchema);
 
-module.exports = Profile; 
+module.exports = Profile;
