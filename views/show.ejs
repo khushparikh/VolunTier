@@ -12,16 +12,19 @@
         <ul>
             <li>Location: <%= foundProfile.townLocation%></li>
             <li>Zip Code: <%= foundProfile.zipCode %></li>
-            <li>Tax ID: <%= foundProfile.taxID %></li>
-            <li>Phone Number: <%= foundProfile.phoneNum %></li>
-            <li>Organization is about <%= foundProfile.interestTag1 %></li>
+            <li><%= foundProfile.location %></li>
+            <li>Interests:</li>
+                <ul>
+                    <li><%= foundProfile.interestTag1 %></li>
+                    <li><%= foundProfile.interestTag2 %></li>
+                    <li><%= foundProfile.interestTag3 %></li>
+                </ul>    
+
         </ul>
-    <a href = "/profiles">See All Organizations</a>
+    <a href = "/profiles">See All Profiles</a>
     <a href = '/profiles/<%=foundProfile.id%>/edit'>Edit Profile</a>
-    <h2></h2>
-    <a href = '/profiles/<%=foundProfile.id%>/addPosition'>Add a volunteer position to <%= foundProfile.name %></a>
     <form action="/profiles/<%=foundProfile.id%>?_method=DELETE" method = POST>
         <button>Delete</button>
     </form>
 </body>
-</html> 
+</html>

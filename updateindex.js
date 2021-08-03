@@ -8,6 +8,7 @@ const session = require('express-session');
 const mongoose = require('mongoose');
 
 const orgProfile = require('./models/orgprofiles');
+const Profile = require('./models/profiles')
 const Position = require('./models/positions')
 const User = require('./models/user')
 
@@ -99,6 +100,50 @@ app.post('/login', async (req, res) => {
 app.post('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/login');
+})
+
+app.get('/profiles', async (req, res) => {
+    const profiles = await Profile.find({})
+    res.render('index.ejs', {profiles})
+})
+
+
+app.get('/profiles/new', (req, res) => {
+    res.render('new.ejs', {categories1, categories2})
+}) 
+
+app.post('/profiles', async (req, res) => {
+    const newProfile = new Profile(req.body);
+    await newProfile.save();
+    console.log(newProfile);
+    res.redirect(`/profiles/${newProfile.id}`)
+})
+
+app.get('/profiles/:id', async(req, res) => {
+    const {id} = req.params;
+    const foundProfile = await Profile.findById(id);
+    console.log(foundProfile);
+    res.render('show.ejs', {foundProfile});
+
+})  
+
+app.get('/profiles/:id/edit', async(req, res) => {
+    const {id} = req.params;
+    const foundProfile = await Profile.findById(id);
+    res.render('edit.ejs', {foundProfile, categories1, categories2});
+})  
+
+app.put('/profiles/:id', async(req, res) => {
+    const {id} = req.params;
+    const editProfile = await Profile.findByIdAndUpdate(id, req.body, {runValidators: true, new: true});
+    console.log(req.body);
+    res.redirect(`/profiles/${editProfile._id}`);
+})
+
+app.delete('/profiles/:id', async(req, res) => {
+    const {id} = req.params;
+    const deletedProfile = await Profile.findByIdAndDelete(id);
+    res.redirect('/profiles')
 })
 
 app.get('/orgprofiles', async (req, res) => { 

@@ -7,28 +7,42 @@
     <title>Sign Up</title>
 </head>
 <body>
-    <h1>Add Your Organization</h1>
+    <h1>Sign Up</h1>
     <form action = "/profiles" method = 'POST'>
         <label for= "name">Name:</label>
-        <input type = "text" name = "name" id = "name" placeholder = "Organization name">
+        <input type = "text" name = "name" id = "name" placeholder = "Profile name">
         <label for = "townLocation">Town Location:</label>
         <input type = "text" name = "townLocation" id = "townlocation" placeholder = "Town Location">
+        
+        <label for = "location">Where Can You Volunteer?</label>
+        
+        <select name = "location" id="location">
+            <% for(let category of categories1) { %>
+                <option value = "<%= category %>"><%= category %></option>
+            <% } %>
+            
+        </select>  
+    
         <label for = "zipCode">Zip Code:</label>
         <input type = "number" name = "zipCode" id = "zipCode" placeholder = "Zip Code">
-        <label for = "taxID">Tax ID:</label>
-        <input type = "number" name = "taxID" id = "taxID" placeholder = "Tax ID">
-        <label for = "phoneNum">Phone number</label>
-        <input type = "number" name = "phoneNum" id = "phoneNum" placeholder = "Phone number">
-        <h2></h2>
-        <label for = "interestTag1">Organization is about:</label>
+       <h2></h2>
+        <label for = "interestTag1, interestTag2, interestTag3">Choose Three Interests:</label>
         <select name = "interestTag1" id="interestTag1">
             <% for(let category of categories2) { %>
                 <option value = "<%= category %>"><%= category %></option>
             <% } %>
         </select>
+        <select name = "interestTag2" id="interestTag2">
+            <% for(let category of categories2) { %>
+                <option value = "<%= category %>"><%= category %></option>
+            <% } %>
+        </select>
+        <select name = "interestTag3" id="interestTag3">
+            <% for(let category of categories2) { %>
+                <option value = "<%= category %>"><%= category %></option>
+            <% } %>
+        </select>                  
         <input type="submit">
     </form>
-    <h2></h2>
-    <a href = "/profiles">Cancel</a>
 </body>
-</html> 
+</html>
