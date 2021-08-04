@@ -8,13 +8,15 @@
 </head>
 <body>
     <h1>Edit Profile</h1>
-    <form action = "/profiles?_method=PUT" method = 'POST'>
-        <label for= "username">Organization Name:</label>
-        <input type = "text" name = "name" id = "name" placeholder = "Profile name" value = "<%= foundUser.name%>">
-        <label for = "location">Town Location:</label>
-        <input type = "text" name = "location" id = "location" placeholder = "Town Location" value = "<%= foundUser.location%>">
+    <form action = "/orgProfiles?_method=PUT" method = 'POST'>
+        <label for= "orgName">Organization Name:</label>
+        <input type = "text" name = "orgName" id = "orgName" placeholder = "Profile name" value = "<%= foundUser.orgName%>">
+        <label for = "townLocation">Town Location:</label>
+        <input type = "text" name = "townLocation" id = "townlocation" placeholder = "Town Location" value = "<%= foundUser.townLocation%>">
         <label for = "zipCode">Zip Code:</label>
         <input type = "number" name = "zipCode" id = "zipCode" placeholder = "Zip Code" value = "<%= foundUser.zipCode%>">
+        <label for = "phoneNum">Phone number</label>
+        <input type = "number" name = "phoneNum" id = "phoneNum" placeholder = "Phone number" value = "<%= foundUser.phoneNum%>">
        <h2></h2>
         <!-- <label for = "interestTag1">Organization is about:</label>
         <select name = "interestTag1" id="interestTag1">

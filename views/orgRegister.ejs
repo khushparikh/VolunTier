@@ -7,9 +7,9 @@
     <title>Register</title>
 </head>
 <body>
-    <h1>Add Your Profile</h1>
+    <h1>Add Your Organization</h1>
     <h4>Already registered? Click <a href = "/login">here</a> to log in</h4>
-    <form action="/register" method="POST">
+    <form action="/orgRegister" method="POST">
         <div>
             <label for= "username">Enter Username:</label>
             <input type = "text" name = "username" id = "username" minlength = "3" maxlength = "20" placeholder = "Username" required>
@@ -18,14 +18,18 @@
             <label for= "password">Enter Password:</label>
             <input type = "password" name = "password" id = "password" minlength = "4" placeholder = "Password" required>
         </div>
-        <label for= "name">Name:</label>
-        <input type = "text" name = "name" id = "name" placeholder = "Organization name" required>
-        <label for = "location">Town Location:</label>
-        <input type = "text" name = "location" id = "location" placeholder = "Town Location" required>
+        <label for= "orgName">Name:</label>
+        <input type = "text" name = "orgName" id = "orgName" placeholder = "Organization name" required>
+        <label for = "townLocation">Town Location:</label>
+        <input type = "text" name = "townLocation" id = "townlocation" placeholder = "Town Location" required>
         <label for = "zipCode">Zip Code:</label>
         <input type = "number" name = "zipCode" id = "zipCode" placeholder = "Zip Code" required>
+        <label for = "taxID">Tax ID:</label>
+        <input type = "number" name = "taxID" id = "taxID" placeholder = "Tax ID" required>
+        <label for = "phoneNum">Phone number</label>
+        <input type = "number" name = "phoneNum" id = "phoneNum" placeholder = "Phone number" required>
         <h2></h2>
-        <label for = "interestTag1">Interests:</label>
+        <label for = "interestTag1">Organization is about:</label>
         <% for(let category of categories2) { %>
             <input type = "checkbox" name = "<%= category %>" value = "<%= category %>"><%= category %></input>
         <% } %>

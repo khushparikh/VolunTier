@@ -7,14 +7,14 @@
     <title>Add Position</title>
 </head>
 <body>
-    <h1>Add A Volunteer Position to <%=foundProfile.name%> </h1>
+    <h1>Add A Volunteer Position to <%=foundUser.username%> </h1>
     <form action = "/positions" method = 'POST'>
         <label for= "orgName">Organization Name:</label>
-        <input type = "text" name = "orgName" id = "orgName" placeholder = "Organization name" value = "<%= foundProfile.name%>">
+        <input type = "text" name = "username" id = "username" placeholder = "Username" value = "<%= foundUser.username%>" required>
         <label for= "positionName">Position Name:</label>
-        <input type = "text" name = "positionName" id = "positionName" placeholder = "Position name">
+        <input type = "text" name = "positionName" id = "positionName" placeholder = "Position name" required>
         <label for = "positionLocation">Location:</label>
-        <input type = "text" name = "positionLocation" id = "positionlocation" placeholder = "Town Location" value = "<%= foundProfile.townLocation%>">
+        <input type = "text" name = "positionLocation" id = "positionlocation" placeholder = "Town Location" value = "<%= foundUser.townLocation%>">
 
         <label for = "location">Volunteers will be: </label>
 
@@ -26,17 +26,15 @@
         </select>  
 
         <label for = "positionZipCode">Zip Code:</label>
-        <input type = "number" name = "positionZipCode" id = "positionZipCode" placeholder = "Zip Code" value = "<%= foundProfile.zipCode%>">
-       <h2></h2>
-        <label for = "interestTag2">Position is about:</label>
-        <select name = "interestTag2" id="interestTag2">
-            <% for(let category of categories2) { %>
-                <option value = "<%= category %>"><%= category %></option>
-            <% } %>
-        </select>
+        <input type = "number" name = "positionZipCode" id = "positionZipCode" placeholder = "Zip Code" value = "<%= foundUser.zipCode%>">
+        <h2></h2>
+        <p>Organization is about:</p>
+        <% for(let category of categories2) { %>
+        <input type = "checkbox" name = "<%= category %>" value = "<%= category %>"><%= category %></input>
+        <% } %>
         <input type="submit">
     </form>
     <h2></h2>
-    <a href = "/orgprofiles/<%=foundProfile.id%>">Cancel</a>
+    <a href = "/profilePage">Cancel</a>
 </body>
 </html> 
