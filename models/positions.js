@@ -16,9 +16,11 @@ const positionSchema = new mongoose.Schema({
         type: String,
         enum: ['Virtual', 'In-Person']
     },
-    interestTag2: String,
+    interests: Array,
+    user_id: String,
 })
+
 
 const Position = mongoose.model('Position', positionSchema);
 
-module.exports = Position;
+module.exports = Position; 

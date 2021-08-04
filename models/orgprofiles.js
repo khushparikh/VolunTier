@@ -1,18 +1,22 @@
 const mongoose = require('mongoose');
 
-const profileSchema = new mongoose.Schema({
-    name: {
+const userSchema = new mongoose.Schema({
+    username: {
         type: String,
-        required: true,
+        required: [true, 'Username cannot be blank']
     },
-    townLocation: String,   
+    password: {
+        type: String,
+        required: [true, 'Password cannot be blank']
+    },
+    orgName: String,
+    townLocation: String,
     zipCode: Number,
     taxID: Number,
-    interestTag1: String,
+    interests: Array,
     phoneNum: Number,
 })
 
-
-const orgProfile = mongoose.model('OrganizationProfile', profileSchema);
+const orgProfile = mongoose.model('orgProfile', userSchema);
 
 module.exports = orgProfile; 

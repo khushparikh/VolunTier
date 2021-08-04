@@ -1,19 +1,18 @@
 const mongoose = require('mongoose');
 
 const profileSchema = new mongoose.Schema({
-    name: {
+    username: {
         type: String,
-        required: true,
+        required: [true, 'Username cannot be blank']
     },
-    townLocation: String,
+    password: {
+        type: String,
+        required: [true, 'Password cannot be blank']
+    },
+    name: String,
+    location: String,
     zipCode: Number,
-    location: {
-        type: String,
-        enum: ['Virtual', 'In-Person']
-    },
-    interestTag1: String,
-    interestTag2: String,
-    interestTag3: String
+    interests: Array,
 })
 
 
