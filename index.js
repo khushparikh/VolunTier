@@ -10,11 +10,11 @@ const mongoose = require('mongoose');
 const orgProfile = require('./models/orgprofiles');
 const Profile = require('./models/profiles')
 const Position = require('./models/positions')
-// const User = require('./models/user')
+
 
 const requireLogin = (req, res, next) => {
     if(!req.session.user_id){
-        res.redirect('/login')
+        res.redirect('/home')
     }
     else{
         next();
@@ -64,6 +64,35 @@ app.get('/home', async(req, res) => {
     }
 })
 
+app.get('/match', requireLogin, async(req, res) => {
+    matches_interest = [];
+    const id = req.session.user_id;
+    const foundUser = await Profile.findById(req.session.user_id);
+    const positions = await Position.find({})
+    for(let position of positions) { 
+        for(let position_interest of position.interests) { 
+            for(let interest of foundUser.interests) { 
+                if(position_interest == interest){
+                    matches_interest.push(position);
+                }
+            }
+        }
+    }
+    console.log(matches_interest);
+    foundUser.matches = matches_interest;
+    await foundUser.save();
+    for(let interest of foundUser.matches) { 
+        foundUser.matches[i].count = 0;
+        for(let interest1 of foundUser.interests) { 
+            if(interest == interest1){
+                count ++;
+            }
+        }
+    }
+
+    res.render('match.ejs', {foundUser, matches_interest})
+}) 
+
 app.get('/yourPositions', requireLogin, async(req, res) => {
     const yourPositions = [];
     const id = req.session.user_id;
@@ -110,7 +139,6 @@ app.post('/orgRegister', async (req, res) => {
     const {password, username, orgName, townLocation, zipCode, taxID, interestTag1, phoneNum} = req.body;
     const hash = await bcrypt.hash(password, 12);
     const notValidUser = await orgProfile.findOne({username});
-    console.log(orgProfile);
     console.log(username);
     if(notValidUser){
         res.send('Username is already taken')
@@ -137,7 +165,7 @@ app.post('/orgRegister', async (req, res) => {
         })
         await organization.save();
         console.log(organization);
-        req.session.user_id = orgProfile._id;
+        req.session.user_id = organization._id;
         res.redirect('/orgProfilePage')
     }
 })
@@ -148,12 +176,22 @@ app.post('/orgRegister', async (req, res) => {
 
 app.get('/orgProfilePage', requireLogin, async(req, res) => {
     const foundUser = await orgProfile.findById(req.session.user_id);
-    res.render('orgProfilePage.ejs', {foundUser, categories1, categories2})
+    if(!foundUser){
+        res.redirect('/home')
+    }
+    else{
+        res.render('orgProfilePage.ejs', {foundUser, categories1, categories2})
+    }
 })  
 
 app.get('/profilePage', requireLogin, async(req, res) => {
     const foundUser = await Profile.findById(req.session.user_id);
-    res.render('profilePage.ejs', {foundUser, categories1, categories2})
+    if(!foundUser){
+        res.redirect('/home')
+    }
+    else{
+        res.render('profilePage.ejs', {foundUser, categories1, categories2})
+    }
 })  
 
 app.get('/login', (req, res) => {
@@ -196,6 +234,7 @@ app.post('/login', async (req, res) => {
 app.post('/orgLogin', async (req, res) => {
     const {username, password, id} = req.body;
     const user = await orgProfile.findOne({username});
+    console.log(user);
     if(!user){
         res.send('wrong username')
     }
@@ -288,8 +327,17 @@ app.put('/profiles', async(req, res) => {
 })
 
 app.put('/orgProfiles', async(req, res) => {
+    const {Culinary, Engineering, Computers, Law, Business, Literature, Music, Finance, Cosmetics} = req.body;
+    const myInterests = [];
+    const hobbies = [Culinary, Engineering, Computers, Law, Business, Literature, Music, Finance, Cosmetics];
+    for(let hobby of hobbies) { 
+        if(hobby){
+            myInterests.push(hobby);
+        }
+    }
     const editProfile = await orgProfile.findByIdAndUpdate(req.session.user_id, req.body, {runValidators: true, new: true});
-    console.log(req.body);
+    editProfile.interests = myInterests;
+    await editProfile.save();
     res.redirect('/orgProfilePage');
 })
 
@@ -316,6 +364,7 @@ app.get('/orgProfiles', async (req, res) => {
 
 app.get('/positions', async (req, res) => {
     const positions = await Position.find({})
+    console.log(positions);
     res.render('listPositions.ejs', {positions})
 })
 
@@ -323,11 +372,6 @@ app.get('/addPosition', requireLogin, async(req, res) => {
     const foundUser = await orgProfile.findById(req.session.user_id);
     res.render('addPosition.ejs', {foundUser, categories1, categories2});
 })  
-
-// app.get('/orgprofiles/new', (req, res) => {
-//     res.render('newOrg.ejs', {categories1, categories2})
-// }) 
-
 // app.post('/orgProfiles', async (req, res) => {
 //     const newProfile = new orgProfile(req.body);
 //     await newProfile.save();
@@ -385,20 +429,6 @@ app.get('/position/:user_id/:id', async(req, res) => {
     console.log(foundUser);
     res.render('showPosition.ejs', {foundPosition, foundUser})
 })    
-
-
-// app.get('/orgProfiles/:id/edit', async(req, res) => {
-//     const {id} = req.params;
-//     const foundProfile = await orgProfile.findById(id);
-//     res.render('editOrg.ejs', {foundProfile, categories1, categories2});
-// })  
-
-
-// app.delete('/orgprofiles/:id', async(req, res) => {
-//     const {id} = req.params;
-//     const deletedProfile = await orgProfile.findByIdAndDelete(id);
-//     res.redirect('/orgprofiles')
-// })
 
 app.delete('/positions/:id', async(req, res) => {
     const {id} = req.params;
