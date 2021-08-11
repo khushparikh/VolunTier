@@ -68,29 +68,58 @@ app.get('/match', requireLogin, async(req, res) => {
     matches_interest = [];
     const id = req.session.user_id;
     const foundUser = await Profile.findById(req.session.user_id);
-    const positions = await Position.find({})
-    for(let position of positions) { 
-        for(let position_interest of position.interests) { 
-            for(let interest of foundUser.interests) { 
-                if(position_interest == interest){
-                    matches_interest.push(position);
+    if(!foundUser){
+        res.redirect("/home")
+    }
+    else{
+        const positions = await Position.find({})
+        for(let position of positions) { 
+            for(let position_interest of position.interests) { 
+                for(let interest of foundUser.interests) { 
+                    if(position_interest == interest){
+                        matches_interest.push(position);
+                    }
                 }
             }
         }
-    }
-    console.log(matches_interest);
-    foundUser.matches = matches_interest;
-    await foundUser.save();
-    for(let interest of foundUser.matches) { 
-        foundUser.matches[i].count = 0;
-        for(let interest1 of foundUser.interests) { 
-            if(interest == interest1){
-                count ++;
+        count = 0;
+        arr = [];
+        var dict = {}
+        loop1:
+        for(let position of matches_interest) { 
+            loop2:
+            for(let dict of arr) { 
+                if(dict.positionID == position.id){
+                    continue loop1;
+                }
             }
+            var dict = {
+                positionName: "",
+                positionID: "",
+                matching_interests: [],
+                index: 0,
+            };
+            for(let interest of foundUser.interests) { 
+                for(let hobby of position.interests) { 
+                    if(hobby == interest){
+                        dict.matching_interests.push(interest);
+                        count ++;
+                    }
+                }
+            }
+            dict.position = position;
+            dict.positionID = position.id;
+            dict.index = count;
+            arr.push(dict);
+            count = 0;
         }
+        arr.sort(function(a, b) {
+            return b.index - a.index;
+        }); 
+        foundUser.matches = arr;
+        await foundUser.save();
+        res.render('match.ejs', {foundUser, arr})
     }
-
-    res.render('match.ejs', {foundUser, matches_interest})
 }) 
 
 app.get('/yourPositions', requireLogin, async(req, res) => {
@@ -427,7 +456,32 @@ app.get('/position/:user_id/:id', async(req, res) => {
     const foundUser = await orgProfile.findById(user_id);
     console.log(foundPosition);
     console.log(foundUser);
-    res.render('showPosition.ejs', {foundPosition, foundUser})
+    if(!req.session.user_id){
+        res.render('showPosition.ejs', {foundPosition, foundUser})
+    } 
+    else{
+        const foundStudent = await Profile.findById(req.session.user_id);
+        if(!foundStudent){
+            res.render('showPosition.ejs', {foundPosition, foundUser})
+        }
+        else{
+            var percent = 0;
+            for(let job of foundStudent.matches) { 
+                matching_interests = [];
+                if(job.positionID == foundPosition.id){
+                    for(let position_interest of foundPosition.interests){
+                        for(let interest of foundStudent.interests){
+                            if(position_interest == interest){
+                                matching_interests.push(interest);
+                                percent = Math.round(matching_interests.length/foundStudent.interests.length*100.0);
+                            }
+                        }
+                    }
+                }
+            }  
+            res.render('showMatchPosition.ejs', {foundPosition, foundUser, foundStudent, percent}) 
+        }
+    }
 })    
 
 app.delete('/positions/:id', async(req, res) => {
