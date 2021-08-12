@@ -13,6 +13,7 @@ const profileSchema = new mongoose.Schema({
     location: String,
     zipCode: Number,
     interests: Array,
+    matches: Array,
 })
 
 
