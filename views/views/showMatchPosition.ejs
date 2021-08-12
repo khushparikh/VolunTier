@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= foundPosition.positionName %> </title>
+</head>
+
+<body>
+    <h1><%= foundPosition.positionName %> for <a href = "/profiles/<%= foundUser.id %>"><%= foundUser.orgName %></a> (<%= percent %>% match)</h1>
+        <ul>
+            <li>Organization: <%= foundUser.orgName%></li>
+            <li>Location: <%= foundPosition.positionLocation%></li>
+            <li>Zip Code: <%= foundPosition.positionZipCode %></li>
+            <li>Position is: <%= foundPosition.location %></li>
+            <li>Position is about:</li>
+            <ol>
+                <% for(let interest of foundPosition.interests) { %>
+                    <li> <%= interest %></li>
+                <% } %>
+            </ol>
+        </ul>
+    <a href = "/positions">See All Positions</a>
+    <h2></h2>
+</body>
+</html> 

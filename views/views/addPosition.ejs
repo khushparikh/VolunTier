@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Position</title>
+</head>
+<body>
+    <h1>Add A Volunteer Position to <%=foundUser.username%> </h1>
+    <form action = "/positions" method = 'POST'>
+        <label for= "orgName">Organization Name:</label>
+        <input type = "text" name = "username" id = "username" placeholder = "Username" value = "<%= foundUser.username%>" required>
+        <label for= "positionName">Position Name:</label>
+        <input type = "text" name = "positionName" id = "positionName" placeholder = "Position name" required>
+        <label for = "positionLocation">Location:</label>
+        <input type = "text" name = "positionLocation" id = "positionlocation" placeholder = "Town Location" value = "<%= foundUser.townLocation%>">
+
+        <label for = "location">Volunteers will be: </label>
+
+        <select name = "location" id="location">
+            <% for(let category of categories1) { %>
+                <option value = "<%= category %>"><%= category %></option>
+            <% } %>
+
+        </select>  
+
+        <label for = "positionZipCode">Zip Code:</label>
+        <input type = "number" name = "positionZipCode" id = "positionZipCode" placeholder = "Zip Code" value = "<%= foundUser.zipCode%>">
+        <h2></h2>
+        <p>Organization is about:</p>
+        <% for(let category of categories2) { %>
+        <input type = "checkbox" name = "<%= category %>" value = "<%= category %>"><%= category %></input>
+        <% } %>
+        <input type="submit">
+    </form>
+    <h2></h2>
+    <a href = "/profilePage">Cancel</a>
+</body>
+</html> 
