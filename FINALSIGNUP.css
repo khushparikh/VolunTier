@@ -133,8 +133,7 @@ h3{
 }
 
 body {
-	background-image:no-repeat url(https://images.unsplash.com/photo-1454942901704-3c44c11b2ad1?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cGVvcGxlJTIwbmF0dXJlfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80);
-	
+	background:#C1D3FE ;
 
 
     
@@ -177,8 +176,8 @@ a {
 
 button {
 	border-radius: 20px;
-	border: 1px solid #fec89a;
-	background-color:#fec89a;
+	border: 1px solid #C1D3FE;
+	background-color:#C1D3FE;
 	color: #FFFFFF;
 	font-size: 12px;
 	font-weight: bold;
@@ -292,8 +291,8 @@ input {
 
 .overlay {
 	background:#bfd7ff;
-	background: -webkit-linear-gradient(to right,#fec89a,#fec89a);
-	background: linear-gradient(to right,#fec89a,#fec89a);
+	background: -webkit-linear-gradient(to right,#C1D3FE,#C1D3FE);
+	background: linear-gradient(to right,#C1D3FE,#C1D3FE);
 
 	background-repeat: no-repeat;
 	background-size: cover;
