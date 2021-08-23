@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= foundUser.orgName %></title>
+</head>
+
+<body>
+    <h1><%= foundUser.orgName %></h1>
+        <ul>
+            <li>Location: <%= foundUser.townLocation%></li>
+            <li>Zip Code: <%= foundUser.zipCode %></li>
+            <li>Phone Number: <%= foundUser.phoneNum %></li>
+            <li>Organization is about:</li>
+            <ol>
+                <% for(let interest of foundUser.interests) { %>
+                    <li> <%= interest %></li>
+                <% } %>
+            </ol>
+        </ul>
+    <a href = "/orgProfiles">See All Organizations</a>
+</body>
+</html> 

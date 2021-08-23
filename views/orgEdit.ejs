@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Organization</title>
+</head>
+<body>
+    <h1>Edit Profile</h1>
+    <form action = "/orgProfiles?_method=PUT" method = 'POST'>
+        <label for= "orgName">Organization Name:</label>
+        <input type = "text" name = "orgName" id = "orgName" placeholder = "Profile name" value = "<%= foundUser.orgName%>">
+        <label for = "townLocation">Town Location:</label>
+        <input type = "text" name = "townLocation" id = "townlocation" placeholder = "Town Location" value = "<%= foundUser.townLocation%>">
+        <label for = "zipCode">Zip Code:</label>
+        <input type = "number" name = "zipCode" id = "zipCode" placeholder = "Zip Code" value = "<%= foundUser.zipCode%>">
+        <label for = "phoneNum">Phone number</label>
+        <input type = "number" name = "phoneNum" id = "phoneNum" placeholder = "Phone number" value = "<%= foundUser.phoneNum%>">
+       <h2></h2>
+        
+       <% for(let category of categories2) { %>
+        <input type="checkbox" name= "<%= category %>" value = "<%= category %>" id= "<%= category %>"> </input>
+        <label for= "<%=category%>"><%= category %></label>
+
+       <% } %> 
+        
+        <input type="submit">
+    </form>
+    </form>
+    <h2></h2>
+    <a href = "/profilePage">Cancel</a>
+</body>
+</html> 

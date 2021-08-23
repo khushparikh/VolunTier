@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Page</title>
+</head>
+    <h1><%= foundUser.orgName%></h1>
+    <ul>
+        <li>Location: <%= foundUser.townLocation%></li>
+        <li>Zip Code: <%= foundUser.zipCode %></li>
+        <li>Tax ID: <%= foundUser.taxID %></li>
+        <li>Phone Number: <%= foundUser.phoneNum %></li>
+        <li>Organization is about:</li>
+        <ol>
+            <% for(let interest of foundUser.interests) { %>
+                <li> <%= interest %></li>
+            <% } %>
+        </ol>
+    </ul>
+   
+
+    <a href = "/addPosition">Add a Volunteer position</a>
+    <h2></h2>
+    <a href = "/yourPositions">View your volunteer positions</a>
+    <h2></h2>
+    <a href = "/orgEdit">Edit your profile</a>
+    <h2></h2>
+    <a href = "/home">Go to homepage</a>
+    <h2></h2>
+    <div>
+    <form action='/logout' method="POST">
+        <button>Logout</button>
+    </form>
+    <h2></h2>
+    <form action="/orgProfilePage/<%= foundUser.id %>?_method=DELETE" method = POST>
+        <button>Delete User</button>
+    </form>
+    </div>
+</body>
+</html> 
