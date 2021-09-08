@@ -1,0 +1,56 @@
+.navbar-brand {
+    color: #3a86ff; 
+    font-family: 'Lato', sans-serif;
+    padding-left: 100px;
+}
+.nav-link {
+    color:black;
+    font-family: 'Lato', sans-serif;
+    font-size: 18px;
+}
+.btn {
+    font-family: 'Lato', sans-serif;
+}
+h1.intro {
+    padding-left:110px;
+    padding-top: 140px;
+    font-size: 45px;
+    font-family: 'Roboto', sans-serif;
+    padding-bottom: -30px;
+}
+.volunteer {
+    color: #3a86ff; 
+}
+h1 {
+    padding-top: -30px;
+    font-size:45px;
+    padding-left:110px;
+    font-family:'Roboto', sans-serif;
+
+}
+p {
+    padding-left: 110px;
+    font-family:'Roboto', sans-serif;
+    color:#6c757d;
+    font-size: 20px;
+}
+.img {
+    width: 370px;
+    height: 370px;
+    padding-right: 500px;
+    padding-top: 80px;
+}
+.login {
+    color:white;
+    text-decoration:none;
+}
+.login:hover {
+    color:white;
+}
+.signup {
+    color:white;
+    text-decoration:none;
+}
+.signup:hover {
+    color:white;
+}
