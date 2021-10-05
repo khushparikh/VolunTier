@@ -39,6 +39,7 @@ app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended: true}));
 app.use(methodOverride('_method'));
 app.use(session({secret: 'notagoodsecret'}));
+app.use(express.static(path.join(__dirname, 'public')))
 
 const categories1 = ['In-Person', 'Virtual'];
 const categories2 = ['Culinary', 'Engineering', 'Computers', 'Law', 'Business', 'Literature', 'Music', 'Finance', 'Cosmetics'];
@@ -155,9 +156,13 @@ app.get('/orgRegister', async(req, res) => {
     }
 })
 
+app.get('/getStarted', async(req, res) => {
+    res.render('getStarted.ejs')
+})
+
 app.get('/register', async(req, res) => {
     if(!req.session.user_id){
-        res.render('register', {categories2})
+        res.render('register', {categories2}, req.session.user_id)
     }
     else{
         res.redirect('/home')
@@ -344,15 +349,34 @@ app.get('/edit', requireLogin, async(req, res) => {
     res.render('edit.ejs', {foundUser, categories1, categories2});
 })  
 
+app.get('/faq', async(req, res) => {
+    res.render('faq.ejs');
+})
+
+app.get('/aboutus', async(req, res) => {
+    res.render('aboutus.ejs');
+})
+
+
+
 app.get('/orgEdit', requireLogin, async(req, res) => {
     const foundUser = await orgProfile.findById(req.session.user_id);
     res.render('orgEdit.ejs', {foundUser, categories1, categories2});
 })  
 
 app.put('/profiles', async(req, res) => {
+    const {Culinary, Engineering, Computers, Law, Business, Literature, Music, Finance, Cosmetics} = req.body;
+    const myInterests = [];
+    const hobbies = [Culinary, Engineering, Computers, Law, Business, Literature, Music, Finance, Cosmetics];
+    for(let hobby of hobbies) { 
+        if(hobby){
+            myInterests.push(hobby);
+        }
+    }
     const editProfile = await Profile.findByIdAndUpdate(req.session.user_id, req.body, {runValidators: true, new: true});
-    console.log(req.body);
-    res.redirect('/profilePage');
+    editProfile.interests = myInterests;
+    await editProfile.save();
+    res.redirect('/profilePage')
 })
 
 app.put('/orgProfiles', async(req, res) => {
