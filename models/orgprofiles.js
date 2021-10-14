@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
     townLocation: String,
     zipCode: Number,
     taxID: Number,
-    interests: Array,
+    interests: Array,   
     phoneNum: Number,
 })
 
