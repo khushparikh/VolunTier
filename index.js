@@ -270,7 +270,7 @@ app.post('/orgLogin', async (req, res) => {
     const user = await orgProfile.findOne({username});
     console.log(user);
     if(!user){
-        res.send('wrong username')
+        res.redirect('/orgLogin')
     }
     else{
         console.log(user.password);
@@ -280,7 +280,7 @@ app.post('/orgLogin', async (req, res) => {
             res.redirect('/orgProfilePage');
         }
         else{
-            res.send('wrong password');
+            res.redirect('/orgLogin');
         }
     }
 })
@@ -360,7 +360,7 @@ app.get('/aboutus', async(req, res) => {
 
 
 app.get('/orgEdit', requireLogin, async(req, res) => {
-    const foundUser = await orgProfile.findById(req.session.user_id);
+    const foundUser= await orgProfile.findById(req.session.user_id);
     res.render('orgEdit.ejs', {foundUser, categories1, categories2});
 })  
 
@@ -402,10 +402,11 @@ app.delete('/profilePage/:id', async(req, res) => {
     res.redirect('/home')
 })
 
+
 app.delete('/orgProfilePage/:id', async(req, res) => {
     const {id} = req.params;
-    console.log(id);
     const deletedProfile = await orgProfile.findByIdAndDelete(id);
+    console.log(deletedProfile);
     req.session.destroy();
     res.redirect('/home')
 })
