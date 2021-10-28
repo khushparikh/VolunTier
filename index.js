@@ -1,3 +1,7 @@
+if(process.env.NODE_ENV !== "production") {
+    require('dotenv').config()
+}
+
 const express = require('express');
 const app = express('');
 const path = require('path');
@@ -6,10 +10,16 @@ const bcrypt = require('bcrypt');
 const session = require('express-session');
 
 const mongoose = require('mongoose');
-
 const orgProfile = require('./models/orgprofiles');
 const Profile = require('./models/profiles')
 const Position = require('./models/positions')
+
+const mbxGeocoding = require("@mapbox/mapbox-sdk/services/geocoding");
+const mapBoxToken = process.env.MAPBOX_TOKEN;
+const geocoder = mbxGeocoding({ accessToken: mapBoxToken})
+
+
+
 
 
 const requireLogin = (req, res, next) => {
@@ -42,7 +52,7 @@ app.use(session({secret: 'notagoodsecret'}));
 app.use(express.static(path.join(__dirname, 'public')))
 
 const categories1 = ['In-Person', 'Virtual'];
-const categories2 = ['Culinary', 'Engineering', 'Computers', 'Law', 'Business', 'Literature', 'Music', 'Finance', 'Cosmetics'];
+const categories2 = ['Culinary', 'Engineering', 'Computer Science', 'Law', 'Business', 'Writing', 'Music', 'Finance', 'Cosmetics', 'Medicine', 'Athletics'];
 
 app.get('/home', async(req, res) => {
     if(!req.session.user_id){
@@ -65,10 +75,17 @@ app.get('/home', async(req, res) => {
     }
 })
 
+app.get('/about', async(req,res) => {
+    res.render("about.ejs")
+})
+
 app.get('/match', requireLogin, async(req, res) => {
     matches_interest = [];
     const id = req.session.user_id;
     const foundUser = await Profile.findById(req.session.user_id);
+
+    // Beginning of Location Matching
+
     if(!foundUser){
         res.redirect("/home")
     }
@@ -87,6 +104,7 @@ app.get('/match', requireLogin, async(req, res) => {
         arr = [];
         var dict = {}
         loop1:
+        
         for(let position of matches_interest) { 
             loop2:
             for(let dict of arr) { 
@@ -114,9 +132,51 @@ app.get('/match', requireLogin, async(req, res) => {
             arr.push(dict);
             count = 0;
         }
+        
+        // Beginning of Location Sorting
+        /*var userLocation = foundUser.forwardGeoCode;
+        console.log(userLocation);
+        var userLong = userLocation[0];
+        var userLat = userLocation[1];
+        for(let dict of arr) {
+           
+            console.log(foundPosition)
+            const positionLongLat = foundPosition.longLat;
+            var positionLong = positionLongLat[0];
+            var positionLat = positionLongLat[1];
+
+            distance = Math.sqrt((positionLong-userLong)^2 + (positionLat - userLong)^2);
+
+            console.log(distance);
+        }
+        */
+        for(let dict of arr) {
+            const foundPosition = Position.findById(dict.positionID);
+            var R = 3958.8; // Radius of the Earth in miles
+            var userLat = (foundUser.forwardGeoCode[0])*(Math.PI/180); // Convert degrees to radians
+            var userLong = (foundUser.forwardGeoCode[1])* (Math.PI/180); // Convert degrees to radians
+            var positionLong = (foundPosition.forwardGeoCode[0])*(Math.PI/180); // Convert degrees to radians
+            var positionLat = (foundPoisition.forwardGeoCode[1])*(Math.PI/180);
+
+            var difflat = positionLat-userLat; // Radian difference (latitudes)
+            var difflon = (positionLong-userLong) * (Math.PI/180); // Radian difference (longitudes)
+        
+
+            var d = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat/2)*Math.sin(difflat/2)+Math.cos(userLat)*Math.cos(positionLat)*Math.sin(difflon/2)*Math.sin(difflon/2)));
+        
+            console.log(d);
+        
+        }
+
+
+        
         arr.sort(function(a, b) {
             return b.index - a.index;
-        }); 
+        });
+        
+
+
+        // Saving and Routing
         foundUser.matches = arr;
         await foundUser.save();
         res.render('match.ejs', {foundUser, arr})
@@ -167,6 +227,8 @@ app.get('/register', async(req, res) => {
     else{
         res.redirect('/home')
     }
+
+
 })
 
 app.post('/orgRegister', async (req, res) => {
@@ -178,20 +240,37 @@ app.post('/orgRegister', async (req, res) => {
         res.send('Username is already taken')
     }
     else{
-        const {Culinary, Engineering, Computers, Law, Business, Literature, Music, Finance, Cosmetics} = req.body;
+        const {Culinary, Engineering, Computers, Law, Business, Literature, Music, Finance, Cosmetics, Medicine, Athletics} = req.body;
         const myInterests = [];
-        const interests = [Culinary, Engineering, Computers, Law, Business, Literature, Music, Finance, Cosmetics];
+        const interests = [Culinary, Engineering, Computers, Law, Business, Literature, Music, Finance, Cosmetics, Medicine, Athletics];
         for(let interest of interests) { 
             if(interest){
                 myInterests.push(interest);
             }
         }
-        console.log(myInterests);
+        
+        const geoData = await geocoder.forwardGeocode({
+            query: req.body.zipCode,
+            limit: 1
+        }).send()
+        var longLat = geoData.body.features[0].geometry.coordinates;
+
+        const reverseData = await geocoder.reverseGeocode({
+            query: geoData.body.features[0].geometry.coordinates,
+        }).send()
+        
+        var place = reverseData.body.features[1].place_name
+           
+        count = place.indexOf(", United States");
+
+        place = place.substring(0, count);
+
         const organization = new orgProfile({
             username, 
             password: hash,
             orgName,
-            townLocation,
+            townLocation: place,
+            forwardGeocode: longLat,
             zipCode,
             taxID,
             interests: myInterests,
@@ -201,6 +280,9 @@ app.post('/orgRegister', async (req, res) => {
         console.log(organization);
         req.session.user_id = organization._id;
         res.redirect('/orgProfilePage')
+        
+        console.log(myInterests);
+       
     }
 })
 
@@ -298,7 +380,7 @@ app.get('/profiles', async (req, res) => {
 
 
 app.post('/register', async (req, res) => {
-    const {password, username, name, location, zipCode} = req.body;
+    const {password, username, name, zipCode} = req.body;
     const hash = await bcrypt.hash(password, 12);
     const notValidUser = await Profile.findOne({username});
     console.log(username);
@@ -306,25 +388,45 @@ app.post('/register', async (req, res) => {
         res.send('Username is already taken')
     }
     else{
-        const {Culinary, Engineering, Computers, Law, Business, Literature, Music, Finance, Cosmetics} = req.body;
+        const {Culinary, Engineering, Computers, Law, Business, Literature, Music, Finance, Cosmetics, Medicine, Athletics} = req.body;
         const myInterests = [];
-        const interests = [Culinary, Engineering, Computers, Law, Business, Literature, Music, Finance, Cosmetics];
+        const interests = [Culinary, Engineering, Computers, Law, Business, Literature, Music, Finance, Cosmetics, Medicine, Athletics];
         for(let interest of interests) { 
             if(interest){
                 myInterests.push(interest);
             }
         }
         console.log(myInterests);
+        
+
+        const geoData = await geocoder.forwardGeocode({
+            query: req.body.zipCode,
+            limit: 1
+        }).send()
+        var longLat = geoData.body.features[0].geometry.coordinates;
+        console.log(geoData.body.features[0].geometry.coordinates);
+
+        const reverseData = await geocoder.reverseGeocode({
+            query: geoData.body.features[0].geometry.coordinates,
+        }).send()
+        
+        var place = reverseData.body.features[1].place_name
+           
+        count = place.indexOf(", United States");
+
+        place = place.substring(0, count);
+
         const Student = new Profile({
             username, 
             password: hash,
             name,
-            location,
+            forwardGeoCode: longLat,
+            location: place,
             zipCode,
             interests: myInterests
         })
         await Student.save();
-        console.log(Student);
+        console.log(Student.forwardGeoCode);
         req.session.user_id = Student._id;
         res.redirect('/profilePage')
     }
@@ -365,9 +467,9 @@ app.get('/orgEdit', requireLogin, async(req, res) => {
 })  
 
 app.put('/profiles', async(req, res) => {
-    const {Culinary, Engineering, Computers, Law, Business, Literature, Music, Finance, Cosmetics} = req.body;
+    const {Culinary, Engineering, Computers, Writing, Law, Business, Literature, Music, Finance, Cosmetics, Medicine, Athletics} = req.body;
     const myInterests = [];
-    const hobbies = [Culinary, Engineering, Computers, Law, Business, Literature, Music, Finance, Cosmetics];
+    const hobbies = [Culinary, Engineering, Computers, Writing, Law, Business, Literature, Music, Finance, Cosmetics, Medicine, Athletics];
     for(let hobby of hobbies) { 
         if(hobby){
             myInterests.push(hobby);
@@ -380,17 +482,39 @@ app.put('/profiles', async(req, res) => {
 })
 
 app.put('/orgProfiles', async(req, res) => {
-    const {Culinary, Engineering, Computers, Law, Business, Literature, Music, Finance, Cosmetics} = req.body;
+    const {Culinary, Engineering, Computers, Law, Business, Literature, Music, Finance, Cosmetics, Medicine, Athletics} = req.body;
     const myInterests = [];
-    const hobbies = [Culinary, Engineering, Computers, Law, Business, Literature, Music, Finance, Cosmetics];
+    const hobbies = [Culinary, Engineering, Computers, Law, Business, Literature, Music, Finance, Cosmetics, Medicine, Athletics];
+
+
     for(let hobby of hobbies) { 
         if(hobby){
             myInterests.push(hobby);
         }
     }
-    const editProfile = await orgProfile.findByIdAndUpdate(req.session.user_id, req.body, {runValidators: true, new: true});
+    const geoData = await geocoder.forwardGeocode({
+        query: req.body.zipCode,
+        limit: 1
+    }).send()
+    var longLat = geoData.body.features[0].geometry.coordinates;
+    console.log(geoData.body.features[0].geometry.coordinates);
+
+    const reverseData = await geocoder.reverseGeocode({
+        query: geoData.body.features[0].geometry.coordinates,
+    }).send()
+    
+    var place = reverseData.body.features[1].place_name
+       
+    count = place.indexOf(", United States");
+
+    place = place.substring(0, count);
+
+
+    const editProfile = await orgProfile.findByIdAndUpdate(req.session.user_id, req.body, {runValidators: true, new: true})
     editProfile.interests = myInterests;
+    editProfile.townLocation = place;
     await editProfile.save();
+    
     res.redirect('/orgProfilePage');
 })
 
@@ -435,7 +559,7 @@ app.get('/addPosition', requireLogin, async(req, res) => {
 
 app.post('/positions', async (req, res) => {
     const {positionName, username, positionLocation, positionZipCode, location, interestTag2, user_id} = req.body;
-    const user = await orgProfile.findOne({username});
+    const user = await orgProfile.findById(req.session.user_id);
     if(!user){
         res.redirect('/addPosition')
     }
@@ -444,18 +568,38 @@ app.post('/positions', async (req, res) => {
             res.redirect('/addPosition')
         }
         else{
-            const {Culinary, Engineering, Computers, Law, Business, Literature, Music, Finance, Cosmetics} = req.body;
-            const myInterests = [];
-            const interests = [Culinary, Engineering, Computers, Law, Business, Literature, Music, Finance, Cosmetics];
+            const {Culinary, Engineering, Computers, Law, Business, Literature, Music, Finance, Cosmetics, Medicine, Athletics} = req.body;
+        const myInterests = [];
+        const interests = [Culinary, Engineering, Computers, Law, Business, Literature, Music, Finance, Cosmetics, Medicine, Athletics];
             for(let interest of interests) { 
                 if(interest){
                     myInterests.push(interest);
                 } 
             }
+
+            // Geo-Coding
+            const geoData = await geocoder.forwardGeocode({
+                query: req.body.positionZipCode,
+                limit: 1
+            }).send()
+            var longLat = geoData.body.features[0].geometry.coordinates;
+            console.log(geoData.body.features[0].geometry.coordinates);
+    
+            const reverseData = await geocoder.reverseGeocode({
+                query: geoData.body.features[0].geometry.coordinates,
+            }).send()
+            
+            var place = reverseData.body.features[1].place_name
+               
+            count = place.indexOf(", United States");
+    
+            place = place.substring(0, count);
+    
+
             const newPosition = new Position({
                 positionName,
                 orgName: user.orgName, 
-                positionLocation,
+                positionLocation: place,
                 positionZipCode,
                 location,
                 interests: myInterests,
