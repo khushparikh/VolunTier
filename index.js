@@ -54,7 +54,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 const categories1 = ['In-Person', 'Virtual'];
 const categories2 = ['Culinary', 'Engineering', 'Computer Science', 'Law', 'Business', 'Writing', 'Music', 'Finance', 'Cosmetics', 'Medicine', 'Athletics'];
 
-app.get('/home', async(req, res) => {
+app.get('/', async(req, res) => {
     if(!req.session.user_id){
         res.render('home.ejs')
     }
@@ -74,6 +74,8 @@ app.get('/home', async(req, res) => {
         }
     }
 })
+
+
 
 app.get('/about', async(req,res) => {
     res.render("about.ejs")
@@ -108,6 +110,7 @@ app.get('/match', requireLogin, async(req, res) => {
         for(let position of matches_interest) { 
             loop2:
             for(let dict of arr) { 
+                console.log(dict)
                 if(dict.positionID == position.id){
                     continue loop1;
                 }
@@ -150,6 +153,7 @@ app.get('/match', requireLogin, async(req, res) => {
             console.log(distance);
         }
         */
+        /*
         for(let dict of arr) {
             const foundPosition = Position.findById(dict.positionID);
             var R = 3958.8; // Radius of the Earth in miles
@@ -167,6 +171,7 @@ app.get('/match', requireLogin, async(req, res) => {
             console.log(d);
         
         }
+        */
 
 
         
@@ -209,7 +214,7 @@ app.get('/yourPosition/:id', requireLogin, async(req, res) => {
 
 app.get('/orgRegister', async(req, res) => {
     if(!req.session.user_id){
-        res.render('orgRegister', {categories2})
+        res.render('orgRegister.ejs', {categories2})
     }
     else{
         res.redirect('/home')
@@ -232,10 +237,9 @@ app.get('/register', async(req, res) => {
 })
 
 app.post('/orgRegister', async (req, res) => {
-    const {password, username, orgName, townLocation, zipCode, taxID, interestTag1, phoneNum} = req.body;
+    const {password, username, orgName, townLocation, zipCode, taxID, interestTag1, phoneNum, description} = req.body;
     const hash = await bcrypt.hash(password, 12);
     const notValidUser = await orgProfile.findOne({username});
-    console.log(username);
     if(notValidUser){
         res.send('Username is already taken')
     }
@@ -253,11 +257,14 @@ app.post('/orgRegister', async (req, res) => {
             query: req.body.zipCode,
             limit: 1
         }).send()
+        console.log(geoData)
         var longLat = geoData.body.features[0].geometry.coordinates;
+        console.log(longLat)
 
         const reverseData = await geocoder.reverseGeocode({
             query: geoData.body.features[0].geometry.coordinates,
         }).send()
+        console.log(reverseData)
         
         var place = reverseData.body.features[1].place_name
            
@@ -274,7 +281,8 @@ app.post('/orgRegister', async (req, res) => {
             zipCode,
             taxID,
             interests: myInterests,
-            phoneNum
+            phoneNum,
+            description
         })
         await organization.save();
         console.log(organization);
@@ -558,7 +566,7 @@ app.get('/addPosition', requireLogin, async(req, res) => {
 // })
 
 app.post('/positions', async (req, res) => {
-    const {positionName, username, positionLocation, positionZipCode, location, interestTag2, user_id} = req.body;
+    const {positionName, username, positionLocation, positionZipCode, description, location, interestTag2, user_id} = req.body;
     const user = await orgProfile.findById(req.session.user_id);
     if(!user){
         res.redirect('/addPosition')
@@ -602,12 +610,14 @@ app.post('/positions', async (req, res) => {
                 positionLocation: place,
                 positionZipCode,
                 location,
+                description,
                 interests: myInterests,
                 user_id: req.session.user_id,
+                phoneNum: user.phoneNum
             })
             await newPosition.save();
             console.log(newPosition);
-            res.redirect(`/position/${user.id}/${newPosition.id}`)
+            res.redirect(`/yourPosition/${newPosition.id}`)
         }
     }
 })
